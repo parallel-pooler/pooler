@@ -25,8 +25,7 @@ PM> Install-Package Pooler
 using Parallel;
 ...
 
-// create new threads pool instance 
-// for max 10 threads running simultaneously:
+// create new threads pool instance for max 10 threads running simultaneously:
 Pooler pool = Pooler.CreateNew(10);
 
 // add 500 anonymous functions to process:
@@ -36,20 +35,16 @@ for (int i = 0; i < 500; i++) {
 		(Pooler pool) => {
 			double dummyResult = Math.Pow(Math.PI, Math.PI);
 		},
-		// optional - do not run task instantly after adding,
-		// run them a few lines later together
+		// optional - do not run task instantly after adding, run them a few lines later together
 		false,
-		// optional - background execution thread priority 
-		// to execute this task
+		// optional - background execution thread priority to execute this task
 		ThreadPriority.Lowest, 
-		// optional - task is not async (task doesn't use 
-		// any background threads inside)
+		// optional - task is not async (task doesn't use any background threads inside)
 		false
 	);
 }
 
-// let's process all tasks in 10 simultaneously 
-// running threads in background:
+// let's process all tasks in 10 simultaneously running threads in background:
 pool.StartProcessing();
 ```
 
@@ -59,15 +54,13 @@ pool.StartProcessing();
 pool.Add(delegate {
 	double dummyResult = Math.Pow(Math.PI, Math.PI);
 });
-// Or there is possible to add task as any void 
-// function accepting first param as Pooler type:
+// Or there is possible to add task as any void function accepting first param as Pooler type:
 pool.Add((Pooler p) => {
 	double dummyResult = Math.Pow(Math.PI, Math.PI);
 });
 
-// Or there is possible to add task as any 
-// Func<Pooler, object> function accepting 
-// first param as Pooler type and returning any result:
+// Or there is possible to add task as any Func<Pooler, object> function 
+// accepting first param as Pooler type and returning any result:
 pool.Add((Pooler p) => {
 	return Math.Pow(Math.PI, Math.PI);
 });
@@ -87,7 +80,7 @@ pool.TaskDone += (Pooler p, PoolerTaskDoneEventArgs e)) => {
 	Console.WriteLine("Task returned result: " + e.TaskResult);
 	
 	// e.RunningThreadsCount [Int32]
-    Console.WriteLine("Currently running threads count: " + e.RunningThreadsCount);
+	Console.WriteLine("Currently running threads count: " + e.RunningThreadsCount);
 };
 
 // triggered immediately when exception inside executing task is catched, before TaskDone event:
@@ -125,10 +118,9 @@ pool.AllDone += (Pooler p, PoolerAllDoneEventArgs e) => {
 pool.SetMaxRunningTasks(
 	// new threads maximum to process all tasks in background
 	50,
-	// optional . true by default - to create and run all new background
-	// threads imediatelly inside this function call.
-	// If false, each new background thread to create to fill
-	// new maximum will be created after any running thread process
+	// optional . true by default - to create and run all new background threads 
+	// imediatelly inside this function call. If false, each new background thread 
+	// to create to fill new maximum will be created after any running thread process 
 	// execute it's current task, so there should not to be that increasing heap..
 	true
 );
@@ -140,13 +132,8 @@ int maxThreads = pool.GetMaxRunningTasks();
 ```
 
 ### Regulating CPU and resources load
+// For .NET code, there is CPU load for your pool background threads managed by operating system resources manager, so the only option how to do it from .NET code is to sleep sometime. To manage sleeping and sleeping time in your tasks globaly, you can use this:
 ```cs
-// For .NET code, there is CPU load for your pool background 
-// threads managed by operating system resources manager, so 
-// the only option how to do it from .NET code is to sleep sometime.
-// To manage sleeping and sleeping time in your tasks globaly, 
-// you can use this methods:
-
 // 1. Set up pausing time globaly for all tasks,
 // any time you want, before processing or any time 
 // at run to cut CPU or other resources load:
@@ -163,12 +150,8 @@ pool.Add((Pooler p) => {
 	p.Pause();
 	double someHardCode3 = Math.Pow(Math.PI, Math.PI);
 });
-
-// now resources should not to be so bussy as before,
-// try to put there harder code to process, increase pause time
-// or try to use test at:
-// https://github.com/parallel-pooler/winforms-application-test
 ```
+Now resources should not to be so bussy as before, try to put there harder code to process, increase pause time or try to use [WinForms Test Application](https://github.com/parallel-pooler/winforms-application-test).
 
 ### Ways to creating parallel pooler instance
 ```cs
@@ -199,9 +182,6 @@ pool = Pooler.GetStaticInstance();
 
 ### Stop processing
 ```cs
-// First optinal param 'abortAllThreadsImmediately' with true
-// by default is to hardly abort all background threads by thread.Abort();,
-// what should be dangerous for your tasks, so to swtch this to false
-// will let all running threads go to their natural task end and than die.
 pool.StopProcessing(true);
 ```
+First optinal param `abortAllThreadsImmediately` with true by default is to hardly abort all background threads by `thread.Abort();`, what should be dangerous for your tasks, so to swtch this to false will let all running threads go to their natural task end and than die.
