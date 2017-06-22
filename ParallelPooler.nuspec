@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
 	<metadata>
-		<id>ParallelPooler</id>
-		<version>1.0.0.0</version>
-		<title>ParallelPooler</title>
+		<id>Pooler</id>
+		<version>1.1.0.0</version>
+		<title>Pooler</title>
 		<authors>Tom Flidr</authors>
 		<owners>Tom Flidr</owners>
 		<licenseUrl>https://opensource.org/licenses/BSD-3-Clause</licenseUrl>

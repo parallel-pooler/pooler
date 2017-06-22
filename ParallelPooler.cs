@@ -211,16 +211,45 @@ namespace Parallel {
             lock (this._runningTasksLock) {
                 return this._runningTasksMax;
             }
-        }
-        /// <summary>
-        /// Add task into threads pool to run.
-        /// </summary>
-        /// <param name="task">Any delegate added internaly into tasks store with no params section or with single param accepting Pooler type.</param>
-        /// <param name="runInstantly">If true by default, run added task instantly after adding in it's own thread in background. If false, call after all Add() method calls the method StartProcessing() to start pool processing.</param>
-        /// <param name="priority">Background thread priority for task executing.</param>
-        /// <param name="async">If task is using any other threads to work or async code, set this to true and call pool.AsyncTaskDone() call after your task is done manualy.</param>
-        /// <returns>Current threads pool instance.</returns>
-        public Pooler Add (TaskDelegate task, bool runInstantly = true, ThreadPriority priority = ThreadPriority.Normal, bool async = false) {
+		}
+		/// <summary>
+		/// Add task into threads pool to run.
+		/// </summary>
+		/// <param name="task">Any function added internaly into tasks store with with single param accepting Pooler type and returning any object as result.</param>
+		/// <param name="runInstantly">If true by default, run added task instantly after adding in it's own thread in background. If false, call after all Add() method calls the method StartProcessing() to start pool processing.</param>
+		/// <param name="priority">Background thread priority for task executing.</param>
+		/// <param name="async">If task is using any other threads to work or async code, set this to true and call pool.AsyncTaskDone() call after your task is done manualy.</param>
+		/// <returns>Current threads pool instance.</returns>
+		public Pooler Add (Func<Pooler, object> task, bool runInstantly = true, ThreadPriority priority = ThreadPriority.Normal, bool async = false) {
+			lock (this._storeLock) {
+				this._store.Add(new Task {
+					Job = task,
+					Priority = priority,
+					Async = async
+				});
+			}
+			if (runInstantly) {
+				lock (this._runningTasksLock) {
+					if (this._runningTasksCount < this._runningTasksMax) {
+						this._runningTasksCount++;
+						if (this._runningTasksCountMax < this._runningTasksCount) {
+							this._runningTasksCountMax = this._runningTasksCount;
+						}
+						this._executeInNewThreadFirstStoreTaskIfAnyOrDie();
+					}
+				}
+			}
+			return this;
+		}
+		/// <summary>
+		/// Add task into threads pool to run.
+		/// </summary>
+		/// <param name="task">Any delegate added internaly into tasks store with no params section or with single param accepting Pooler type.</param>
+		/// <param name="runInstantly">If true by default, run added task instantly after adding in it's own thread in background. If false, call after all Add() method calls the method StartProcessing() to start pool processing.</param>
+		/// <param name="priority">Background thread priority for task executing.</param>
+		/// <param name="async">If task is using any other threads to work or async code, set this to true and call pool.AsyncTaskDone() call after your task is done manualy.</param>
+		/// <returns>Current threads pool instance.</returns>
+		public Pooler Add (TaskDelegate task, bool runInstantly = true, ThreadPriority priority = ThreadPriority.Normal, bool async = false) {
             lock (this._storeLock) {
                 this._store.Add(new Task {
                     Job = task,
