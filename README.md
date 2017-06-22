@@ -1,7 +1,7 @@
 # **[Parallel Pooler](https://www.nuget.org/packages/Pooler)**
 
 [![Latest Stable Version](https://img.shields.io/badge/Stable-v1.1.2-brightgreen.svg?style=plastic)](https://github.com/tomFlidr/desharp/releases)
-[![License](https://img.shields.io/badge/Licence-BSD-brightgreen.svg?style=plastic)](https://raw.githubusercontent.com/debug-sharp/desharp/master/LICENCE.md)
+[![License](https://img.shields.io/badge/Licence-BSD-brightgreen.svg?style=plastic)](https://raw.githubusercontent.com/parallel-pooler/parallel-pooler/master/LICENSE)
 ![.NET Version](https://img.shields.io/badge/.NET->=4.0-brightgreen.svg?style=plastic)
 
 .NET parallel tasks executing library.
