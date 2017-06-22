@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+	<metadata>
+		<id>ParallelPooler</id>
+		<version>1.0.0.0</version>
+		<title>ParallelPooler</title>
+		<authors>Tom Flidr</authors>
+		<owners>Tom Flidr</owners>
+		<licenseUrl>https://opensource.org/licenses/BSD-3-Clause</licenseUrl>
+		<projectUrl>https://github.com/parallel-pooler</projectUrl>
+		<iconUrl>https://raw.githubusercontent.com/parallel-pooler/parallel-pooler/master/gfx/parallel-pooler-icon.ico</iconUrl>
+		<language>en-US</language>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>Parallel tasks executing library.</description>
+		<copyright>Copyright ©	2017</copyright>
+		<tags>paralel task job threads pool pooling thread</tags>
+		<dependencies>
+			<!--dependency id="Microsoft.CSharp" version="4.0.0.0" />
+			<dependency id="System" version="4.0.0.0" />
+			<dependency id="System.Core" version="4.0.0.0" /-->
+		</dependencies>
+		<releaseNotes>https://github.com/parallel-pooler/parallel-pooler/releases</releaseNotes>
+	</metadata>
+</package>
