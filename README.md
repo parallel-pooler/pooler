@@ -192,6 +192,7 @@ pool.Add(
 			// another tasks by this bg thread:
 			pool.AsyncTaskDone(sender);
 		};
+		client.Load();
 	},
 	false,
 	ThreadPriority.Lowest, 
