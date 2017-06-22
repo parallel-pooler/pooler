@@ -184,4 +184,4 @@ pool = Pooler.GetStaticInstance();
 ```cs
 pool.StopProcessing(true);
 ```
-First optinal param `abortAllThreadsImmediately` with true by default is to hardly abort all background threads by `thread.Abort();`, what should be dangerous for your tasks, so to swtch this to false will let all running threads go to their natural task end and than die.
+First optinal param (true by default) is to heavy abort - all background threads are aborted by `bgThread.Abort();`, what should be dangerous for your task. So switch this to `false` to let all running background threads go to their natural task end and than abort.
