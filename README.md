@@ -184,9 +184,12 @@ pool.Add(
 	// any delegate or void to process
 	(Pooler pool) => {
 		// some async code start here:
-		CustomDownloader client = new Downloader("http://example.com/something/what/takes/some/time/to/load");
+		CustomDownloader client = new CustomDownloader(
+			"http://example.com/something/what/takes/some/time/to/load"
+		);
 		client.Loaded += (object sender, EventArgs e) => {
-			// not call pool to continue executing another tasks by this bg thread:
+			// not call pool to continue executing 
+			// another tasks by this bg thread:
 			pool.AsyncTaskDone(sender);
 		};
 	},
