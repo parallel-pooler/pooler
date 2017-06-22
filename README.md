@@ -12,18 +12,18 @@ PM> Install-Package Pooler
 ```
 
 ## Examples
-- Basics - create new pool and run tasks
-- Add delegate tasks or functions returning results
-- Use Pooler events
-- Changing threads count at run
-- Regulating CPU and resources load
-- Ways to creating parallel pooler instance
-- Stop processing
+1. Basics - create new pool and run tasks
+2. Add delegate tasks or functions returning results
+3. Use Pooler events
+4. Changing threads count at run
+5. Regulating CPU and resources load
+6. Ways to creating parallel pooler instance
+7. Stop processing
+8. Async tasks
 
-### Basics - create new pool and run tasks
+### 1. Basics - create new pool and run tasks
 ```cs
 using Parallel;
-...
 
 // create new threads pool instance for max 10 threads running simultaneously:
 Pooler pool = Pooler.CreateNew(10);
@@ -43,12 +43,11 @@ for (int i = 0; i < 500; i++) {
 		false
 	);
 }
-
 // let's process all tasks in 10 simultaneously running threads in background:
 pool.StartProcessing();
 ```
 
-### Add delegate tasks or functions returning results
+### 2. Add delegate tasks or functions returning results
 ```cs
 // There is possible to add task as delegate:
 pool.Add(delegate {
@@ -70,7 +69,7 @@ pool.TaskDone += (Pooler p, PoolerTaskDoneEventArgs e)) => {
 };
 ```
 
-### Use Pooler events
+### 3. Use Pooler events
 `pool.TaskDone` event is triggered after each task has been executed (successfuly or with exception):
 ```cs
 pool.TaskDone += (Pooler p, PoolerTaskDoneEventArgs e)) => {
@@ -110,7 +109,7 @@ pool.AllDone += (Pooler p, PoolerAllDoneEventArgs e) => {
 };
 ```
 
-### Changing running threads count in run
+### 4. Changing running threads count in run
 There is possible to change processing background threads count at game play any time you want, Pooler is using locks internaly to manage that properly:
 ```cs
 pool.SetMaxRunningTasks(
@@ -128,7 +127,7 @@ There is also possible to get currently running maximum. Currently running maxim
 int maxThreads = pool.GetMaxRunningTasks();
 ```
 
-### Regulating CPU and resources load
+### 5. Regulating CPU and resources load
 For .NET code, there is CPU load and any other resources load for your threads managed by operating system, so the only option how to manage load from .NET code is to sleep sometime. Then you can have some free system resources for another jobs, for example you need to have another free 20% CPU computation capacity. To manage sleeping and sleeping time in your tasks globaly by pool, you can use this:
 
 1. Set up pausing time globaly for all tasks, any time you want, before processing or any time at run to cut CPU or other resources load:
@@ -151,7 +150,7 @@ pool.Add((Pooler p) => {
 ```
 Now resources should not to be so bussy as before, try to put there harder code to process, increase pause time or try to use [WinForms Test Application](https://github.com/parallel-pooler/winforms-application-test).
 
-### Ways to creating parallel pooler instance
+### 6. Ways to creating parallel pooler instance
 
 Creating new instance by static factory or by new Pooler:
 ```cs
@@ -172,8 +171,29 @@ pool = Pooler.GetStaticInstance();
 
 ```
 
-### Stop processing
+### 7. Stop processing
 First optinal param (true by default) is to heavy abort - all background threads are aborted by `bgThread.Abort();`, what should be dangerous for your task. So switch this to `false` to let all running background threads go to their natural task end and than abort.
 ```cs
 pool.StopProcessing(true);
+```
+
+### 8. Async tasks
+To use any other threads or async code in your pool tasks, you need to tell pooler at the end of async task code that you are done by `pool.AsyncTaskDone();` or `pool.AsyncTaskDone(resultObject);`:
+```cs
+pool.Add(
+	// any delegate or void to process
+	(Pooler pool) => {
+		// some async code start here:
+		CustomDownloader client = new Downloader("http://example.com/something/what/takes/some/time/to/load");
+		client.Loaded += (object sender, EventArgs e) => {
+			// not call pool to continue executing another tasks by this bg thread:
+			pool.AsyncTaskDone(sender);
+		};
+	},
+	false,
+	ThreadPriority.Lowest, 
+	// true - task is async!
+	true
+);
+pool.StartProcessing();
 ```
