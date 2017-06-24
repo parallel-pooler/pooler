@@ -219,7 +219,7 @@ To use any other threads or async code in your pool tasks, you need to tell pool
 ```cs
 pool.Add(
 	// any delegate or void to process
-	(Pooler pool) => {
+	(Pooler.Base pool) => {
 		// some async code start here:
 		CustomDownloader client = new CustomDownloader(
 			"http://example.com/something/what/takes/some/time/to/load"
