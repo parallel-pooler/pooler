@@ -191,7 +191,6 @@ pool.TaskDone += (Pooler.Base p, Pooler.TaskDoneEventArgs e)) => {
 	double dummyResult = (double)e.TaskResult;
 };
 ```
-```
 
 There is also possible to use single static instance from `Pooler.(Parallel|Repeater)._instance` by:
 ```cs
