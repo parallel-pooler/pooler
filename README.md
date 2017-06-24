@@ -4,7 +4,9 @@
 [![License](https://img.shields.io/badge/Licence-BSD-brightgreen.svg?style=plastic)](https://raw.githubusercontent.com/parallel-pooler/pooler/master/LICENSE)
 ![.NET Version](https://img.shields.io/badge/.NET->=4.0-brightgreen.svg?style=plastic)
 
-.NET parallel tasks executing library. `Pooler.Parallel` class to execute different tasks in limited background threads count and `Pooler.Repeater` class to execute single specific task also in limited background threads count with specific repetition rate or in infinite mode.
+.NET parallel tasks executing library.
+- `Pooler.Parallel` class to execute different tasks in limited background threads count.
+- `Pooler.Repeater` class to execute single specific task also in limited background threads count with specific repetition rate or in infinite mode.
 
 ## Instalation
 ```nuget
