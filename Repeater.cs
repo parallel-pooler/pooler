@@ -68,6 +68,29 @@ namespace Pooler {
 		}
 
 		/// <summary>
+		/// Get total tasks count to repeatedly process, null means infinite count.
+		/// You can get the value or null anytime you want at run.
+		/// </summary>
+		/// <returns>Tasks count to repeatedly process, null means infinite count.</returns>
+		public virtual int? GetTasksCount () {
+			lock (this.runningTasksLock) {
+				return this._tasksCount;
+			}
+		}
+		/// <summary>
+		/// Set total tasks count to repeatedly process, null means infinite count.
+		/// You can set higher, lower value or null anytime you want at run.
+		/// </summary>
+		/// <param name="tasksCount">Tasks count to repeatedly process, null means infinite count.</param>
+		/// <returns>Repeater instance.</returns>
+		public virtual Repeater SetTasksCount (int? tasksCount = null) {
+			lock (this.runningTasksLock) {
+				this._tasksCount = tasksCount;
+			}
+			return this;
+		}
+
+		/// <summary>
 		/// Set task into threads pool to run.
 		/// </summary>
 		/// <param name="task">Any function added internaly into tasks store with with single param accepting Parallel type and returning any object as result.</param>
