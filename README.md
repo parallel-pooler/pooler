@@ -166,7 +166,7 @@ pool = Pooler.Repeater.CreateNew(10, 500, 100);
 pool = new Pooler.Repeater(10, 500, 100);
 ```
 First (optional) param is max. threads in background to executing one specific task. 10 by default.
-Second (optional) param is how many times will be specific task executed.
+Second (optional) param is how many times will be specific task executed. Null means infinite, then you need to use pool.StopProcessing(); somewhere in the future manualy.
 Third (optional) param is pause miliseconds to slow down CPU load or other resources by `pool.Pause();` calls inside your task, 0 by default.
 
 #### Adding specific task into Repeater pool:
