@@ -71,7 +71,7 @@ pool.TaskDone += (Pooler.Base p, Pooler.TaskDoneEventArgs e)) => {
 ```
 
 ### 3. Use Pooler events
-`pool.TaskDone` event is triggered after each task has been executed (successfuly or with exception):
+- `pool.TaskDone` event is triggered after each task has been executed (successfuly or with exception):
 ```cs
 pool.TaskDone += (Pooler.Base p, Pooler.TaskDoneEventArgs e)) => {
 	Console.WriteLine("Single task has been executed.");
@@ -85,7 +85,7 @@ pool.TaskDone += (Pooler.Base p, Pooler.TaskDoneEventArgs e)) => {
 	Console.WriteLine("Executed tasks count: " + e.ExecutedTasksCount);
 };
 ```
-`pool.TaskException` event is triggered immediately when exception inside executing task is catched, before TaskDone event:
+- `pool.TaskException` event is triggered immediately when exception inside executing task is catched, before TaskDone event:
 ```cs
 pool.TaskException += (Pooler.Base p, Pooler.ExceptionEventArgs e) => {
 	Console.WriteLine("Catched exception during task execution.");
@@ -94,7 +94,7 @@ pool.TaskException += (Pooler.Base p, Pooler.ExceptionEventArgs e) => {
 	Console.WriteLine(e.Exception.Message);
 };
 ```
-`pool.AllDone` event is triggered after all tasks in pooler store has been executed:
+- `pool.AllDone` event is triggered after all tasks in pooler store has been executed:
 ```cs
 pool.AllDone += (Pooler.Base p, Pooler.AllDoneEventArgs e) => {
 	Console.WriteLine("All tasks has been executed.");	
@@ -159,8 +159,8 @@ Pooler.Parallel pool;
 pool = Pooler.Parallel.CreateNew(10, 100);
 pool = new Pooler.Parallel(10, 100);
 ```
-First (optional) param is max. threads in background to executing all tasks. 10 by default.
-Second (optional) param is pause miliseconds to slow down CPU load or other resources by `pool.Pause();` calls inside your tasks, 0 by default.
+- First (optional) param is max. threads in background to executing all tasks. 10 by default.
+- Second (optional) param is pause miliseconds to slow down CPU load or other resources by `pool.Pause();` calls inside your tasks, 0 by default.
 
 Create new repeater tasks instance by static factory or by new Pooler.Repeater to process manytimes only one specific call:
 ```cs
@@ -168,9 +168,9 @@ Pooler.Repeater pool;
 pool = Pooler.Repeater.CreateNew(10, 500, 100);
 pool = new Pooler.Repeater(10, 500, 100);
 ```
-First (optional) param is max. threads in background to executing one specific task. 10 by default.
-Second (optional) param is how many times will be specific task executed. Null means infinite, then you need to use pool.StopProcessing(); somewhere in the future manualy.
-Third (optional) param is pause miliseconds to slow down CPU load or other resources by `pool.Pause();` calls inside your task, 0 by default.
+- First (optional) param is max. threads in background to executing one specific task. 10 by default.
+- Second (optional) param is how many times will be specific task executed. Null means infinite, then you need to use pool.StopProcessing(); somewhere in the future manualy.
+- Third (optional) param is pause miliseconds to slow down CPU load or other resources by `pool.Pause();` calls inside your task, 0 by default.
 
 #### Repeater instance and single specific task setup:
 To add only one specific task into Repeater threads pool to execute this single task manytimes in limited background threads count, use:
