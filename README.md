@@ -6,7 +6,7 @@
 
 .NET parallel tasks executing library.
 - `Pooler.Parallel` class to execute different tasks in limited background threads count.
-- `Pooler.Repeater` class to execute single specific task also in limited background threads count with specific repetition rate or in infinite mode.
+- `Pooler.Repeater` class to execute single specific task in limited background threads count with specific rate or in infinite count.
 
 ## Instalation
 ```nuget
