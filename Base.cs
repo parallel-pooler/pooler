@@ -56,7 +56,7 @@ namespace Pooler {
 		/// <summary>
 		/// Lock for reading/writing from/into this.runningTasksCountMax;
 		/// </summary>
-		protected readonly object runningTasksLock = new object { };
+		protected readonly ReaderWriterLockSlim runningTasksLock = new ReaderWriterLockSlim();
 
 		/// <summary>
 		/// Miliseconds for pooler.Pause(); call inside any task to slow down CPU or any other computer resources for each running thread in threads pool.
@@ -65,7 +65,7 @@ namespace Pooler {
 		/// <summary>
 		/// Lock for reading/writing from/into this.pauseMiliseconds;
 		/// </summary>
-		protected readonly object pauseMilisecondsLock = new object { };
+		protected readonly ReaderWriterLockSlim pauseMilisecondsLock = new ReaderWriterLockSlim();
 
 		/// <summary>
 		/// Exceptions store for synchronously running task fails, returned in AllDone handler.
@@ -91,9 +91,11 @@ namespace Pooler {
 		/// </summary>
 		/// <returns>Maximum peak of running threads in one moment in one executing process.</returns>
 		public virtual int GetMaxRunningTasks () {
-			lock (this.runningTasksLock) {
-				return this.runningTasksMax;
-			}
+			int r = 0;
+			this.runningTasksLock.EnterReadLock();
+			r = this.runningTasksMax;
+			this.runningTasksLock.ExitReadLock();
+			return r;
 		}
 		/// <summary>
 		/// Change running tasks maximum anytime you want. 
@@ -109,19 +111,19 @@ namespace Pooler {
 		/// <returns></returns>
 		public virtual Base SetMaxRunningTasks (int maxRunningTasks = Base.RUNNING_TASKS_MAX_DEFAULT, bool increaseHeapRun = true) {
 			int threadsCountToStart = 0;
-			lock (this.runningTasksLock) {
-				this.runningTasksMax = maxRunningTasks;
-				if (increaseHeapRun) {
-					if (this.runningTasksCount < maxRunningTasks) {
-						threadsCountToStart = maxRunningTasks - this.runningTasksCount;
-						if (threadsCountToStart > 0) {
-							for (int i = 0; i < threadsCountToStart; i++) {
-								this.runExecutingTaskInNewThread();
-							}
+			this.runningTasksLock.EnterWriteLock();
+			this.runningTasksMax = maxRunningTasks;
+			if (increaseHeapRun) {
+				if (this.runningTasksCount < maxRunningTasks) {
+					threadsCountToStart = maxRunningTasks - this.runningTasksCount;
+					if (threadsCountToStart > 0) {
+						for (int i = 0; i < threadsCountToStart; i++) {
+							this.runExecutingTaskInNewThread();
 						}
 					}
 				}
 			}
+			this.runningTasksLock.ExitWriteLock();
 			return this;
 		}
 
@@ -157,22 +159,22 @@ namespace Pooler {
 		/// <returns>Current threads pool instance.</returns>
 		public virtual Base StartProcessing (bool heapRun = true) {
 			if (heapRun) {
-				lock (this.runningTasksLock) {
-					this.executedTasksCount = 0;
-					int threadsCountToStart = this.runningTasksMax - this.runningTasksCount;
-					if (threadsCountToStart > 0) {
-						for (int i = 0; i < threadsCountToStart; i++) {
-							this.runExecutingTaskInNewThread();
-						}
-					}
-				}
-			} else {
-				lock (this.runningTasksLock) {
-					this.executedTasksCount = 0;
-					if (this.runningTasksCount < this.runningTasksMax) {
+				this.runningTasksLock.EnterWriteLock();
+				this.executedTasksCount = 0;
+				int threadsCountToStart = this.runningTasksMax - this.runningTasksCount;
+				if (threadsCountToStart > 0) {
+					for (int i = 0; i < threadsCountToStart; i++) {
 						this.runExecutingTaskInNewThread();
 					}
 				}
+				this.runningTasksLock.ExitWriteLock();
+			} else {
+				this.runningTasksLock.EnterWriteLock();
+				this.executedTasksCount = 0;
+				if (this.runningTasksCount < this.runningTasksMax) {
+					this.runExecutingTaskInNewThread();
+				}
+				this.runningTasksLock.ExitWriteLock();
 			}
 			return this;
 		}

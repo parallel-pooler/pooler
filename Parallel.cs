@@ -68,18 +68,22 @@ namespace Pooler {
 		/// <param name="async">If task is using any other threads to work or async code, set this to true and call pool.AsyncTaskDone() call after your task is done manualy.</param>
 		/// <returns>Current threads pool instance.</returns>
 		public Parallel Add (Func<Base, object> task, bool runInstantly = true, ThreadPriority priority = ThreadPriority.Normal, bool async = false) {
-			lock (this.runningTasksLock) {
-				this._store.Add(new Task {
-					Job = task,
-					Priority = priority,
-					Async = async
-				});
-			}
+			this.runningTasksLock.EnterWriteLock();
+			this._store.Add(new Task {
+				Job = task,
+				Priority = priority,
+				Async = async
+			});
+			this.runningTasksLock.ExitWriteLock();
 			if (runInstantly) {
-				lock (this.runningTasksLock) {
-					if (this.runningTasksCount < this.runningTasksMax) {
-						this.runExecutingTaskInNewThread();
-					}
+				this.runningTasksLock.EnterUpgradeableReadLock();
+				if (this.runningTasksCount < this.runningTasksMax) {
+					this.runningTasksLock.EnterWriteLock();
+					this.runningTasksLock.ExitUpgradeableReadLock();
+					this.runExecutingTaskInNewThread();
+					this.runningTasksLock.ExitWriteLock();
+				} else {
+					this.runningTasksLock.ExitUpgradeableReadLock();
 				}
 			}
 			return this;
@@ -94,18 +98,22 @@ namespace Pooler {
 		/// <param name="async">If task is using any other threads to work or async code, set this to true and call pool.AsyncTaskDone() call after your task is done manualy.</param>
 		/// <returns>Current threads pool instance.</returns>
 		public Parallel Add (TaskDelegate task, bool runInstantly = true, ThreadPriority priority = ThreadPriority.Normal, bool async = false) {
-			lock (this.runningTasksLock) {
-				this._store.Add(new Task {
-					Job = task,
-					Priority = priority,
-					Async = async
-				});
-			}
+			this.runningTasksLock.EnterWriteLock();
+			this._store.Add(new Task {
+				Job = task,
+				Priority = priority,
+				Async = async
+			});
+			this.runningTasksLock.ExitWriteLock();
 			if (runInstantly) {
-				lock (this.runningTasksLock) {
-					if (this.runningTasksCount < this.runningTasksMax) {
-						this.runExecutingTaskInNewThread();
-					}
+				this.runningTasksLock.EnterUpgradeableReadLock();
+				if (this.runningTasksCount < this.runningTasksMax) {
+					this.runningTasksLock.EnterWriteLock();
+					this.runningTasksLock.ExitUpgradeableReadLock();
+					this.runExecutingTaskInNewThread();
+					this.runningTasksLock.ExitWriteLock();
+				} else {
+					this.runningTasksLock.ExitUpgradeableReadLock();
 				}
 			}
 			return this;
@@ -118,10 +126,10 @@ namespace Pooler {
 		/// <param name="abortAllThreadsImmediately">Abord all threads by thread.Abort(); to stop background executing threads immediately.</param>
 		public override void StopProcessing (bool abortAllThreadsImmediately = true) {
 			int threadsCount = 0;
-			lock (this.runningTasksLock) {
-				this._store = new List<Task>();
-				threadsCount = this.threads.Count;
-			}
+			this.runningTasksLock.EnterWriteLock();
+			this._store = new List<Task>();
+			threadsCount = this.threads.Count;
+			this.runningTasksLock.ExitWriteLock();
 			if (abortAllThreadsImmediately) {
 				// yeah, I know, lines bellow are realy creazy, 
 				// but it works much better than whole foreach cycle 
@@ -150,20 +158,37 @@ namespace Pooler {
 			Task? task = null;
 			int runningTasksCount = 0;
 			int executedTasksCount = 0;
-			lock (this.runningTasksLock) {
-				this.executedTasksCount++;
-				runningTasksCount = this.runningTasksCount;
-				executedTasksCount = this.executedTasksCount;
-				if (this.runningTasksCount <= this.runningTasksMax) {
-					if (this.runningTasksCount < this.runningTasksMax && this._store.Count > 1) {
-						this.runExecutingTaskInNewThread();
-					}
+			this.runningTasksLock.EnterWriteLock();
+			this.executedTasksCount++;
+			this.runningTasksLock.ExitWriteLock();
+			this.runningTasksLock.EnterUpgradeableReadLock();
+			runningTasksCount = this.runningTasksCount;
+			executedTasksCount = this.executedTasksCount;
+			if (this.runningTasksCount <= this.runningTasksMax) {
+				if (this.runningTasksCount < this.runningTasksMax && this._store.Count > 1) {
+					this.runningTasksLock.EnterWriteLock();
+					this.runningTasksLock.ExitUpgradeableReadLock();
+					this.runExecutingTaskInNewThread();
 					if (this._store.Count > 0) {
 						task = this._store[0];
 						this._store.RemoveAt(0);
 					}
+					this.runningTasksLock.ExitWriteLock();
+				} else {
+					if (this._store.Count > 0) {
+						this.runningTasksLock.EnterWriteLock();
+						this.runningTasksLock.ExitUpgradeableReadLock();
+						task = this._store[0];
+						this._store.RemoveAt(0);
+						this.runningTasksLock.ExitWriteLock();
+					} else {
+						this.runningTasksLock.ExitUpgradeableReadLock();
+					}
 				}
+			} else {
+				this.runningTasksLock.ExitUpgradeableReadLock();
 			}
+			
 			if (this.taskDoneHasHandlers()) {
 				this.taskDoneInvoke(new TaskDoneEventArgs {
 					RunningTasksCount = runningTasksCount,
@@ -174,9 +199,9 @@ namespace Pooler {
 			if (task.HasValue) {
 				this.executeTask(task.Value);
 			} else {
-				lock (this.runningTasksLock) {
-					this.executingThreadEnd();
-				}
+				this.runningTasksLock.EnterWriteLock();
+				this.executingThreadEnd();
+				this.runningTasksLock.ExitWriteLock();
 			}
 		}
 
