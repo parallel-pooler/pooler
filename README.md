@@ -1,6 +1,6 @@
 # **[Pooler](https://www.nuget.org/packages/Pooler)**
 
-[![Latest Stable Version](https://img.shields.io/badge/Stable-v2.1.0-brightgreen.svg?style=plastic)](https://github.com/parallel-pooler/pooler/releases)
+[![Latest Stable Version](https://img.shields.io/badge/Stable-v2.3.0-brightgreen.svg?style=plastic)](https://github.com/parallel-pooler/pooler/releases)
 [![License](https://img.shields.io/badge/Licence-BSD-brightgreen.svg?style=plastic)](https://raw.githubusercontent.com/parallel-pooler/pooler/master/LICENSE)
 ![.NET Version](https://img.shields.io/badge/.NET->=4.0-brightgreen.svg?style=plastic)
 
@@ -169,7 +169,7 @@ pool = Pooler.Repeater.CreateNew(10, 500, 100);
 pool = new Pooler.Repeater(10, 500, 100);
 ```
 - First (optional) param is max. threads in background to executing one specific task. 10 by default.
-- Second (optional) param is how many times will be specific task executed. Null means infinite, then you need to use pool.StopProcessing(); somewhere in the future manualy.
+- Second (optional) param is how many times will be specific task executed. Null means infinite, then you need to use pool.StopAll(); somewhere in the future manualy.
 - Third (optional) param is pause miliseconds to slow down CPU load or other resources by `pool.Pause();` calls inside your task, 0 by default.
 
 #### Repeater instance and single specific task setup:
@@ -211,7 +211,11 @@ pool = Pooler.Repeater.GetStaticInstance();
 ### 7. Stop processing
 First optinal param (true by default) is to heavy abort - all background threads are aborted by `bgThread.Abort();`, what should be dangerous for your task. So switch this to `false` to let all running background threads go to their natural task end and than abort.
 ```cs
-pool.StopProcessing(true);
+pool.StopAll(true);
+```
+To stop only one background thread processing to make threads pool going to end:
+```cs
+pool.StopCurrent(true);
 ```
 
 ### 8. Async tasks

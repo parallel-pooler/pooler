@@ -273,7 +273,7 @@ namespace Pooler {
 		/// or naturaly to set something to stop next tasks runs in this.done(); function.
 		/// </summary>
 		/// <param name="abortAllThreadsImmediately">Abord all threads by thread.Abort(); to stop background executing threads immediately.</param>
-		public abstract void StopProcessing (bool abortAllThreadsImmediately = true);
+		public abstract void StopAll (bool abortAllThreadsImmediately = true);
 
 		/// <summary>
 		/// After synchronous task is done, this function is called internaly.

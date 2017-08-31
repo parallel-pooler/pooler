@@ -17,9 +17,19 @@
 	/// <param name="pool">Threads instance pool instance.</param>
 	/// <param name="poolTaskExceptionEventArgs">Event arguments object with Exception field as Exception of synchronously executed thread catched exception.</param>
 	public delegate void TaskExceptionHandler (Base pool, ExceptionEventArgs poolTaskExceptionEventArgs);
-	/// <summary>
+    /// <summary>
 	/// Any delegate added internaly into tasks store in Add() method with no params section or with single param accepting Pooler.Base type.
 	/// </summary>
 	/// <param name="pool">threads instance pool instance.</param>
-	public delegate void TaskDelegate (Base pool);
+    public delegate void TaskDelegate (Base pool);
+    /// <summary>
+	/// Any delegate added internaly into tasks store in Add() method with no params section or with single param accepting Pooler.Base type.
+	/// </summary>
+	/// <param name="pool">threads instance pool instance.</param>
+	public delegate void TaskDelegateParallel (Parallel pool);
+    /// <summary>
+	/// Any delegate added internaly into tasks store in Add() method with no params section or with single param accepting Pooler.Base type.
+	/// </summary>
+	/// <param name="pool">threads instance pool instance.</param>
+	public delegate void TaskDelegateRepeater (Repeater pool);
 }

@@ -67,7 +67,7 @@ namespace Pooler {
 		/// <param name="priority">Background thread priority for task executing.</param>
 		/// <param name="async">If task is using any other threads to work or async code, set this to true and call pool.AsyncTaskDone() call after your task is done manualy.</param>
 		/// <returns>Current threads pool instance.</returns>
-		public Parallel Add (Func<Base, object> task, bool runInstantly = true, ThreadPriority priority = ThreadPriority.Normal, bool async = false) {
+		public Parallel Add (Func<Parallel, object> task, bool runInstantly = true, ThreadPriority priority = ThreadPriority.Normal, bool async = false) {
 			lock (this.runningTasksLock) {
 				this._store.Add(new Task {
 					Job = task,
@@ -93,7 +93,7 @@ namespace Pooler {
 		/// <param name="priority">Background thread priority for task executing.</param>
 		/// <param name="async">If task is using any other threads to work or async code, set this to true and call pool.AsyncTaskDone() call after your task is done manualy.</param>
 		/// <returns>Current threads pool instance.</returns>
-		public Parallel Add (TaskDelegate task, bool runInstantly = true, ThreadPriority priority = ThreadPriority.Normal, bool async = false) {
+		public Parallel Add (TaskDelegateParallel task, bool runInstantly = true, ThreadPriority priority = ThreadPriority.Normal, bool async = false) {
 			lock (this.runningTasksLock) {
 				this._store.Add(new Task {
 					Job = task,
@@ -116,7 +116,7 @@ namespace Pooler {
 		/// the tasks store and run all runnung background threads into their natural end.
 		/// </summary>
 		/// <param name="abortAllThreadsImmediately">Abord all threads by thread.Abort(); to stop background executing threads immediately.</param>
-		public override void StopProcessing (bool abortAllThreadsImmediately = true) {
+		public override void StopAll (bool abortAllThreadsImmediately = true) {
 			int threadsCount = 0;
 			lock (this.runningTasksLock) {
 				this._store = new List<Task>();
