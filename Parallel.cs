@@ -93,7 +93,7 @@ namespace Pooler {
 		/// <param name="priority">Background thread priority for task executing.</param>
 		/// <param name="async">If task is using any other threads to work or async code, set this to true and call pool.AsyncTaskDone() call after your task is done manualy.</param>
 		/// <returns>Current threads pool instance.</returns>
-		public Parallel Add (TaskDelegateParallel task, bool runInstantly = true, ThreadPriority priority = ThreadPriority.Normal, bool async = false) {
+		public Parallel Add (ParallelTaskDelegate task, bool runInstantly = true, ThreadPriority priority = ThreadPriority.Normal, bool async = false) {
 			lock (this.runningTasksLock) {
 				this._store.Add(new Task {
 					Job = task,

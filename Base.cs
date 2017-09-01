@@ -209,12 +209,20 @@ namespace Pooler {
 			object taskResult = null;
 			object taskJob = task.Job;
 			try {
-				if (taskJob is TaskDelegate) {
-					(taskJob as TaskDelegate).Invoke(this);
-				} else if (taskJob is Func<Base, object>) {
-					taskResult = (taskJob as Func<Base, object>).Invoke(this);
-				} else {
-					throw new Exception("Pooler task has to be type 'delegate', 'Pooler.TaskDelegate' (void accepting first param to be 'Pooler.Base') or 'Func<Pooler.Base, object>'.");
+				if (taskJob is ParallelTaskDelegate) {
+					(taskJob as ParallelTaskDelegate).Invoke(this as Parallel);
+				} else if (taskJob is RepeaterTaskDelegate) {
+                    (taskJob as RepeaterTaskDelegate).Invoke(this as Repeater);
+                } else if (taskJob is Func<Parallel, object>) {
+					taskResult = (taskJob as Func<Parallel, object>).Invoke(this as Parallel);
+				} else if (taskJob is Func<Repeater, object>) {
+                    taskResult = (taskJob as Func<Repeater, object>).Invoke(this as Repeater);
+                } else {
+					throw new Exception(
+                        "Pooler task has to be type: "
+                        + "Pooler.ParallelTaskDelegate | Pooler.RepeaterTaskDelegate | "
+                        + "Func<Pooler.Parallel, object> | Func<Pooler.Repeater, object>."
+                    );
 				}
 			} catch (Exception e) {
 				lock (this.exceptionsLock) {

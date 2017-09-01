@@ -33,7 +33,7 @@ Pooler.Parallel pool = Pooler.Parallel.CreateNew(10);
 for (int i = 0; i < 500; i++) {
 	pool.Add(
 		// any delegate or void to process
-		(Pooler.Base pool) => {
+		(Pooler.Parallel pool) => {
 			double dummyResult = Math.Pow(Math.PI, Math.PI);
 		},
 		// optional - do not run task instantly after adding, run them a few lines later together
@@ -55,13 +55,13 @@ pool.Add(delegate {
 	double dummyResult = Math.Pow(Math.PI, Math.PI);
 });
 // ... or to add task as any void function accepting first param as Pooler type:
-pool.Add((Pooler.Base p) => {
+pool.Add((Pooler.Parallel p) => {
 	double dummyResult = Math.Pow(Math.PI, Math.PI);
 });
 
-// ... or to add task as Func<Pooler.Base, object> function:
+// ... or to add task as Func<Pooler.Parallel, object> function:
 // accepting first param as Pooler type and returning any result:
-pool.Add((Pooler.Base p) => {
+pool.Add((Pooler.Parallel p) => {
 	return Math.Pow(Math.PI, Math.PI);
 });
 // ... then you can pick up returned result in pool.TaskDone event:
@@ -141,7 +141,7 @@ int pausemiliseconds = pool.GetPauseMiliseconds();
 
 2. Use `pool.Pause();` method sometimes in your hard task:
 ```cs
-pool.Add((Pooler.Base p) => {
+pool.Add((Pooler.Parallel p) => {
 	double someHardCode1 = Math.Pow(Math.PI, Math.PI);
 	p.Pause();
 	double someHardCode2 = Math.Pow(Math.PI, Math.PI);
@@ -169,7 +169,7 @@ pool = Pooler.Repeater.CreateNew(10, 500, 100);
 pool = new Pooler.Repeater(10, 500, 100);
 ```
 - First (optional) param is max. threads in background to executing one specific task. 10 by default.
-- Second (optional) param is how many times will be specific task executed. Null means infinite, then you need to use pool.StopAll(); somewhere in the future manualy.
+- Second (optional) param is how many times will be specific task executed. Null means infinite (zero - 0 - doesn't means infinite), then you need to use pool.StopAll(); or pool.StopCurrent(); somewhere in the task body in the future future manualy.
 - Third (optional) param is pause miliseconds to slow down CPU load or other resources by `pool.Pause();` calls inside your task, 0 by default.
 
 #### Repeater instance and single specific task setup:
@@ -180,13 +180,13 @@ pool.Set(delegate {
 	double dummyResult = Math.Pow(Math.PI, Math.PI);
 });
 // ... or set task as any void function accepting first param as Pooler type:
-pool.Set((Pooler.Base p) => {
+pool.Set((Pooler.Repeater p) => {
 	double dummyResult = Math.Pow(Math.PI, Math.PI);
 });
 
-// ... or set task as Func<Pooler.Base, object> function:
+// ... or set task as Func<Pooler.Repeater, object> function:
 // accepting first param as Pooler type and returning any result:
-pool.Set((Pooler.Base p) => {
+pool.Set((Pooler.Repeater p) => {
 	return Math.Pow(Math.PI, Math.PI);
 });
 // ... then you can pick up returned result as before in pool.TaskDone event:
@@ -223,7 +223,7 @@ To use any other threads or async code in your pool tasks, you need to tell pool
 ```cs
 pool.Add(
 	// any delegate or void to process
-	(Pooler.Base pool) => {
+	(Pooler.Parallel pool) => {
 		// some async code start here:
 		CustomDownloader client = new CustomDownloader(
 			"http://example.com/something/what/takes/some/time/to/load"

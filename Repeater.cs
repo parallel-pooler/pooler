@@ -38,7 +38,7 @@ namespace Pooler {
 		/// Create and return new threads pool instance, nowhere regstered, just created.
 		/// </summary>
 		/// <param name="maxRunningTasks">Max threads running in parallel to execute given tasks.</param>
-		/// <param name="tasksCount">Tasks count to process repeatedly, zero means infinite.</param>
+		/// <param name="tasksCount">Tasks count to process repeatedly, null means infinite.</param>
 		/// <param name="pauseMiliseconds">Miliseconds for pooler.Pause(); call inside any task to slow down CPU or any other computer resources for each running thread in threads pool.</param>
 		public Repeater (int maxRunningTasks = 10, int? tasksCount = null, int pauseMiliseconds = 0) : base(maxRunningTasks, pauseMiliseconds) {
 			this._tasksCount = tasksCount;
@@ -47,7 +47,7 @@ namespace Pooler {
 		/// Get single instance from Parallel.instance place created only once.
 		/// </summary>
 		/// <param name="maxRunningTasks">Max threads running in parallel to execute given tasks.</param>
-		/// <param name="tasksCount">Tasks count to process repeatedly, zero means infinite.</param>
+		/// <param name="tasksCount">Tasks count to process repeatedly, null means infinite.</param>
 		/// <param name="pauseMiliseconds">Miliseconds for pooler.Pause(); call inside any task to slow down CPU or any other computer resources for each running thread in threads pool.</param>
 		/// <returns>static instance created only once.</returns>
 		public static Repeater GetStaticInstance (int maxRunningTasks = Base.RUNNING_TASKS_MAX_DEFAULT, int? tasksCount = null, int pauseMiliseconds = Base.PAUSE_MILESECONDS_DEFAULT) {
@@ -60,7 +60,7 @@ namespace Pooler {
 		/// Create and return new threads pool instance, nowhere regstered, just created.
 		/// </summary>
 		/// <param name="maxRunningTasks">Max threads running in parallel to execute given tasks.</param>
-		/// <param name="tasksCount">Tasks count to process repeatedly, zero means infinite.</param>
+		/// <param name="tasksCount">Tasks count to process repeatedly, null means infinite.</param>
 		/// <param name="pauseMiliseconds">Miliseconds for pooler.Pause(); call inside any task to slow down CPU or any other computer resources for each running thread in threads pool.</param>
 		/// <returns>New threads pool instance to use.</returns>
 		public static Repeater CreateNew (int maxRunningTasks = Base.RUNNING_TASKS_MAX_DEFAULT, int? tasksCount = null, int pauseMiliseconds = Base.PAUSE_MILESECONDS_DEFAULT) {
@@ -124,7 +124,7 @@ namespace Pooler {
 		/// <param name="priority">Background thread priority for task executing.</param>
 		/// <param name="async">If task is using any other threads to work or async code, set this to true and call pool.AsyncTaskDone() call after your task is done manualy.</param>
 		/// <returns>Current threads pool instance.</returns>
-		public Repeater Set (TaskDelegateRepeater task, bool runInstantly = true, ThreadPriority priority = ThreadPriority.Normal, bool async = false) {
+		public Repeater Set (RepeaterTaskDelegate task, bool runInstantly = true, ThreadPriority priority = ThreadPriority.Normal, bool async = false) {
 			lock (this.runningTasksLock) {
 				this._task = new Task {
 					Job = task,
